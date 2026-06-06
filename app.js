@@ -653,6 +653,28 @@ function addRefillRow() {
   runReactiveCalculations();
 }
 
+// Хелпер для санітації обсягу заправок (тільки цілі числа)
+function sanitizeRefillAmount(inputEl, refill) {
+  let valStr = inputEl.value.replace(/,/g, '.');
+  let val = Math.round(parseFloat(valStr));
+  if (isNaN(val) || val < 0) val = 0;
+  refill.amount = val;
+  inputEl.value = val;
+  runReactiveCalculations();
+}
+
+// Хелпер для санітації обсягу рідин/мастил (максимум до тисячних)
+function sanitizeFluidAmount(inputEl, fluid) {
+  let valStr = inputEl.value.replace(/,/g, '.');
+  let val = parseFloat(valStr);
+  if (isNaN(val) || val < 0) val = 0;
+  val = Math.round(val * 1000) / 1000;
+  fluid.amount = val;
+  inputEl.value = val;
+  syncConsumablesFromDOM();
+  runReactiveCalculations();
+}
+
 function appendRefillRowToDOM(refill) {
   const container = document.getElementById("refill-logs-container");
   const row = document.createElement("div");
@@ -796,11 +818,13 @@ function appendRefillRowToDOM(refill) {
   // Слухач обсягу для наливу (санітація вводу)
   amountInput.addEventListener("input", (e) => {
     if (refill.method === "base") {
-      let cleanVal = e.target.value.replace(/[^0-9]/g, '');
-      let val = parseInt(cleanVal, 10);
+      let valStr = e.target.value.replace(/,/g, '.');
+      let val = Math.round(parseFloat(valStr));
       if (isNaN(val) || val < 0) val = 0;
       refill.amount = val;
-      e.target.value = val;
+      if (valStr.includes('.')) {
+        e.target.value = val;
+      }
       runReactiveCalculations();
     }
   });
@@ -812,6 +836,13 @@ function appendRefillRowToDOM(refill) {
     }
   });
 
+  // Санітація значення при втраті фокусу
+  amountInput.addEventListener("blur", () => {
+    if (refill.method === "base") {
+      sanitizeRefillAmount(amountInput, refill);
+    }
+  });
+
   // Слухач дати заправки
   dateInput.addEventListener("input", (e) => {
     refill.date = e.target.value;
@@ -820,12 +851,7 @@ function appendRefillRowToDOM(refill) {
   // Обробник блокування
   okBtn.addEventListener("click", () => {
     if (!refill.locked) {
-      let cleanVal = amountInput.value.replace(/[^0-9]/g, '');
-      let val = parseInt(cleanVal, 10);
-      if (isNaN(val) || val < 0) val = 0;
-      refill.amount = val;
-      amountInput.value = val;
-      runReactiveCalculations();
+      sanitizeRefillAmount(amountInput, refill);
     }
 
     refill.locked = !refill.locked;
@@ -883,7 +909,7 @@ function appendCustomFluidRowToDOM(fluid) {
       <input type="text" class="fluid-name-input ${isCustom ? '' : 'hidden'}" value="${fluid.name}" placeholder="Назва рідини" style="min-height: 38px; padding: 0.5rem;">
     </div>
     <div class="form-group" style="margin: 0; display: flex; flex-direction: column; gap: 0.25rem;">
-      <input type="number" class="fluid-amount-input" value="${fluid.amount || ''}" min="0" step="0.1" placeholder="К-сть (л/кг)">
+      <input type="number" class="fluid-amount-input" value="${fluid.amount || ''}" min="0" step="0.001" placeholder="К-сть (л/кг)">
       <span class="norm-feedback text-sm text-muted" style="font-family: var(--font-mono); display: block; white-space: nowrap; margin-top: 0.25rem;">Норма: 0.00 л</span>
     </div>
     <button type="button" class="btn btn-danger btn-xs btn-delete-row">
@@ -921,8 +947,20 @@ function appendCustomFluidRowToDOM(fluid) {
 
   amountInput.addEventListener("input", (e) => {
     let cleanVal = e.target.value.replace(/,/g, '.');
-    fluid.amount = parseFloat(cleanVal) || 0;
+    let val = parseFloat(cleanVal);
+    if (isNaN(val) || val < 0) val = 0;
+    // Запобігаємо більше ніж 3 знакам після коми
+    const parts = cleanVal.split('.');
+    if (parts.length > 1 && parts[1].length > 3) {
+      val = Math.round(val * 1000) / 1000;
+      e.target.value = val;
+    }
+    fluid.amount = val;
     syncConsumablesFromDOM();
+  });
+
+  amountInput.addEventListener("blur", () => {
+    sanitizeFluidAmount(amountInput, fluid);
   });
 
   row.querySelector(".btn-delete-row").addEventListener("click", () => {
@@ -945,7 +983,10 @@ function syncConsumablesFromDOM() {
       name = selectVal;
     }
     const rawVal = row.querySelector(".fluid-amount-input").value.replace(/,/g, '.');
-    const amount = parseFloat(rawVal);
+    let amount = parseFloat(rawVal);
+    if (!isNaN(amount)) {
+      amount = Math.round(amount * 1000) / 1000;
+    }
     
     if (name && !isNaN(amount) && amount > 0) {
       list.push({ name, amount });
@@ -1292,7 +1333,7 @@ function runReactiveCalculations() {
     
     if (normRate > 0) {
       const calculatedNorm = totalConsumption * normRate;
-      feedbackEl.textContent = `Норма витрати: ${calculatedNorm.toFixed(2)} л`;
+      feedbackEl.textContent = `Норма витрати: ${calculatedNorm.toFixed(3)} л`;
     } else {
       feedbackEl.textContent = "Норма: відсутня";
     }
@@ -1523,7 +1564,7 @@ ${wb.fuelType === "Дизель" ? `Початковий залишок AdBlue: 
 ПІДСУМКОВІ ПОКАЗНИКИ:
 --------------------------------------------------
 Загальна пройдена відстань: ${totalDistance.toFixed(1)} ${unit}
-Загальний об'єм заправок: ${totalRefills.toFixed(1)} л
+Загальний об'єм заправок: ${totalRefills} л
 Загальна розрахована витрата: ${totalConsumption.toFixed(2)} л
 Кінцевий залишок палива в баку: ${finalFuel.toFixed(2)} л
 Кінцевий одометр (розрахунковий): ${(wb.startOdometer + totalDistance).toFixed(1)} ${unit}
