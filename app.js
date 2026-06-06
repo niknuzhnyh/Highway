@@ -920,7 +920,8 @@ function appendCustomFluidRowToDOM(fluid) {
   });
 
   amountInput.addEventListener("input", (e) => {
-    fluid.amount = parseFloat(e.target.value) || 0;
+    let cleanVal = e.target.value.replace(/,/g, '.');
+    fluid.amount = parseFloat(cleanVal) || 0;
     syncConsumablesFromDOM();
   });
 
@@ -943,7 +944,8 @@ function syncConsumablesFromDOM() {
     } else {
       name = selectVal;
     }
-    const amount = parseFloat(row.querySelector(".fluid-amount-input").value);
+    const rawVal = row.querySelector(".fluid-amount-input").value.replace(/,/g, '.');
+    const amount = parseFloat(rawVal);
     
     if (name && !isNaN(amount) && amount > 0) {
       list.push({ name, amount });
