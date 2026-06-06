@@ -700,7 +700,7 @@ function appendRefillRowToDOM(refill) {
       <!-- Динамічний інпут чи селект (прихований для Налив) -->
     </div>
     <div class="form-group" style="margin: 0;">
-      <input type="number" class="refill-amount-input" value="${refill.amount}" min="0" placeholder="Літри">
+      <input type="number" class="refill-amount-input" value="${refill.amount}" min="0" step="1" placeholder="Літри">
     </div>
     <button type="button" class="btn btn-outline btn-xs btn-ok-refill">ОК</button>
     <button type="button" class="btn btn-danger btn-xs btn-delete-row">
@@ -796,7 +796,10 @@ function appendRefillRowToDOM(refill) {
   // Слухач обсягу для наливу
   amountInput.addEventListener("input", (e) => {
     if (refill.method === "base") {
-      refill.amount = parseFloat(e.target.value) || 0;
+      let val = parseInt(e.target.value, 10);
+      if (isNaN(val) || val < 0) val = 0;
+      refill.amount = val;
+      amountInput.value = val;
       runReactiveCalculations();
     }
   });
@@ -1179,7 +1182,7 @@ function runReactiveCalculations() {
   // Оновлюємо DOM результати
   const unit = isGen ? " год" : " км";
   document.getElementById("calc-total-distance").textContent = `${totalDistance.toFixed(1)}${unit}`;
-  document.getElementById("calc-total-refills").textContent = `${totalRefills.toFixed(1)} л`;
+  document.getElementById("calc-total-refills").textContent = `${Math.round(totalRefills)} л`;
   document.getElementById("calc-total-consumption").textContent = `${totalConsumption.toFixed(2)} л`;
   
   const remainingEl = document.getElementById("calc-remaining-fuel");
@@ -1358,7 +1361,7 @@ function handleCloseWaybillTrigger() {
     <div class="summary-item"><span>Машина/Номер:</span><span>${wb.plate}</span></div>
     <div class="summary-item"><span>Водій:</span><span>${wb.driverName}</span></div>
     <div class="summary-item"><span>Пройдено всього:</span><span>${totalDistance.toFixed(1)}${unit}</span></div>
-    <div class="summary-item"><span>Заправлено палива:</span><span>${totalRefills.toFixed(1)} л</span></div>
+    <div class="summary-item"><span>Заправлено палива:</span><span>${Math.round(totalRefills)} л</span></div>
     <div class="summary-item"><span>Розрахована витрата:</span><span>${totalConsumption.toFixed(2)} л</span></div>
   `;
 
