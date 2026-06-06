@@ -700,7 +700,7 @@ function appendRefillRowToDOM(refill) {
       <!-- Динамічний інпут чи селект (прихований для Налив) -->
     </div>
     <div class="form-group" style="margin: 0;">
-      <input type="number" class="refill-amount-input" value="${refill.amount}" min="0" step="1" placeholder="Літри">
+      <input type="number" class="refill-amount-input" value="${Math.round(refill.amount) || 0}" min="0" step="1" placeholder="Літри">
     </div>
     <button type="button" class="btn btn-outline btn-xs btn-ok-refill">ОК</button>
     <button type="button" class="btn btn-danger btn-xs btn-delete-row">
@@ -793,14 +793,22 @@ function appendRefillRowToDOM(refill) {
   // Ініціалізуємо деталі при рендерингу
   updateDetailsSection();
 
-  // Слухач обсягу для наливу
+  // Слухач обсягу для наливу (санітація вводу)
   amountInput.addEventListener("input", (e) => {
     if (refill.method === "base") {
-      let val = parseInt(e.target.value, 10);
+      let cleanVal = e.target.value.replace(/[^0-9]/g, '');
+      let val = parseInt(cleanVal, 10);
       if (isNaN(val) || val < 0) val = 0;
       refill.amount = val;
-      amountInput.value = val;
+      e.target.value = val;
       runReactiveCalculations();
+    }
+  });
+
+  // Блокування введення спецсимволів та дробових розділювачів на рівні клавіатури
+  amountInput.addEventListener("keydown", (e) => {
+    if (["e", "E", ",", ".", "-", "+"].includes(e.key)) {
+      e.preventDefault();
     }
   });
 
@@ -811,6 +819,15 @@ function appendRefillRowToDOM(refill) {
 
   // Обробник блокування
   okBtn.addEventListener("click", () => {
+    if (!refill.locked) {
+      let cleanVal = amountInput.value.replace(/[^0-9]/g, '');
+      let val = parseInt(cleanVal, 10);
+      if (isNaN(val) || val < 0) val = 0;
+      refill.amount = val;
+      amountInput.value = val;
+      runReactiveCalculations();
+    }
+
     refill.locked = !refill.locked;
     applyLockState();
     if (state.activeWaybill) {
