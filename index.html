@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Військовий Облік: Дорожні Листи & Паливо</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#1e1e24">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Google Fonts for Tactical Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- SVG Sprite definitions for reliable offline iconography -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <!-- Log Out Icon -->
+    <symbol id="icon-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </symbol>
+    <!-- Plus Icon -->
+    <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </symbol>
+    <!-- Trash Icon -->
+    <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </symbol>
+    <!-- Save Icon -->
+    <symbol id="icon-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+      <polyline points="17 21 17 13 7 13 7 21" />
+      <polyline points="7 3 7 8 15 8" />
+    </symbol>
+    <!-- Lock Icon -->
+    <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </symbol>
+    <!-- Shield Alert Icon -->
+    <symbol id="icon-shield-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </symbol>
+    <!-- Vehicle Icon -->
+    <symbol id="icon-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="1" y="3" width="15" height="13" />
+      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+      <circle cx="5.5" cy="18.5" r="2.5" />
+      <circle cx="18.5" cy="18.5" r="2.5" />
+    </symbol>
+    <!-- Generator Icon -->
+    <symbol id="icon-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </symbol>
+    <!-- Fuel/Droplet Icon -->
+    <symbol id="icon-droplet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+    </symbol>
+    <!-- Speed/Gauge Icon -->
+    <symbol id="icon-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </symbol>
+    <!-- User Icon -->
+    <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </symbol>
+    <!-- Document Icon -->
+    <symbol id="icon-file-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </symbol>
+    <!-- Ticket / Coupon Icon -->
+    <symbol id="icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+      <line x1="7" y1="7" x2="7.01" y2="7" />
+    </symbol>
+    <!-- Home / Dashboard Icon -->
+    <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </symbol>
+    <!-- Refresh Icon -->
+    <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+    </symbol>
+  </svg>
+
+  <!-- Notification Container (Toast System) -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="header-logo">
+      <svg class="header-svg"><use href="#icon-shield-alert"></use></svg>
+      <span>Облік Палива</span>
+    </div>
+    <div id="user-badge" class="user-badge hidden">
+      <svg class="badge-user-icon"><use href="#icon-user"></use></svg>
+      <span id="user-name-display" class="user-name">ст. серж. Петренко І.</span>
+      <button id="btn-logout" class="btn-icon-only" title="Вийти">
+        <svg><use href="#icon-logout"></use></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-viewport">
+
+    <!-- VIEW 1: LOGIN & REGISTRATION REQUEST -->
+    <section id="view-login" class="app-screen active">
+      <div class="card tactical-card auth-card">
+        <div class="card-header text-center">
+          <h2>Вхід до системи</h2>
+          <p class="subtitle text-amber">Доступ лише для уповноважених військовослужбовців</p>
+        </div>
+        
+        <div class="card-body">
+          <button id="btn-google-oauth" class="btn btn-primary btn-block btn-oauth">
+            <svg class="google-logo" viewBox="0 0 24 24" width="24" height="24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.9h6.69c-.29 1.5-.14 2.8-.97 3.76v3.13h1.56c.92-.85 1.56-2.1 1.56-3.62z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.13-2.42c-.87.59-1.98.94-3.23.94-2.48 0-4.58-1.68-5.33-3.94H1.61v2.5A11.99 11.99 0 0 0 12 24z"/>
+              <path fill="#FBBC05" d="M6.67 15.67A7.15 7.15 0 0 1 6.25 12c0-1.29.22-2.54.62-3.71V5.79H1.61A11.99 11.99 0 0 0 0 12c0 2.34.67 4.5 1.83 6.33l4.84-2.66z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0A11.99 11.99 0 0 0 1.61 5.79l5.06 3.92c.75-2.26 2.85-3.96 5.33-3.96z"/>
+            </svg>
+            Увійти через Google (OAuth 2.0)
+          </button>
+          
+          <div class="divider">або</div>
+          
+          <div class="text-center">
+            <button id="trigger-register-form" class="btn btn-outline btn-block">
+              Не зареєстровані в системі?
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registration Request Sub-View (Modal/Collapsible Card) -->
+      <div id="card-register-request" class="card tactical-card register-card hidden">
+        <div class="card-header">
+          <h3>Форма запиту на реєстрацію</h3>
+          <p class="subtitle">Вкажіть офіційні дані підрозділу</p>
+        </div>
+        <form id="form-register-request" class="card-body">
+          <div class="form-group">
+            <label for="reg-fullname">ПІБ військовослужбовця</label>
+            <input type="text" id="reg-fullname" placeholder="напр., ст. серж. Петренко Іван Васильович" required minlength="5">
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-subunit">Підрозділ / Рота / Батальйон</label>
+            <input type="text" id="reg-subunit" placeholder="напр., 2 механізована рота" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-plates">Запитувані військові номери техніки / генераторів</label>
+            <input type="text" id="reg-plates" placeholder="напр., БТ-1234, Gen-45, ЗСУ 9081" required>
+            <small class="form-help">Можна вказати кілька одиниць через кому</small>
+          </div>
+
+          <div class="form-actions row-grid">
+            <button type="button" id="btn-cancel-register" class="btn btn-outline">Скасувати</button>
+            <button type="submit" class="btn btn-accent">Надіслати запит</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- VIEW 2: DASHBOARD / VEHICLE MANAGEMENT -->
+    <section id="view-dashboard" class="app-screen">
+      <div class="dashboard-header">
+        <div class="dashboard-title">
+          <h2>Управління закріпленими активами</h2>
+          <p class="subtitle">Оберіть транспортний засіб або генератор для обліку</p>
+        </div>
+        <button id="btn-go-vouchers" class="btn btn-outline btn-vouchers-nav">
+          <svg class="btn-svg"><use href="#icon-tag"></use></svg>
+          <span>Реєстр талонів</span>
+        </button>
+      </div>
+
+      <div class="assets-grid" id="assets-list-container">
+        <!-- Dynically populated from javascript state -->
+        <div class="card tactical-card asset-skeleton">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- VIEW 3: OFFICIAL WAYBILL FORM (DYNAMIC & REACTIVE) -->
+    <section id="view-waybill-form" class="app-screen">
+      <div class="form-navigation">
+        <button id="btn-back-dashboard" class="btn btn-outline btn-back">
+          ← До панелі активів
+        </button>
+        <span id="waybill-status-badge" class="badge badge-active">АКТИВНИЙ ДОРОЖНІЙ ЛИСТ</span>
+      </div>
+
+      <div class="card tactical-card waybill-container">
+        <!-- WAYBILL HEADER -->
+        <div class="waybill-header-section">
+          <div class="waybill-title-container">
+            <span class="document-label">ОФІЦІЙНИЙ ДОКУМЕНТ</span>
+            <h1 class="waybill-main-title">ДОРОЖНІЙ ЛИСТ</h1>
+            <span id="waybill-serial-number" class="serial-number">№ DL-2026-06/001</span>
+          </div>
+
+          <div class="waybill-meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Транспортний засіб / Машина:</span>
+              <span id="wb-vehicle-plate" class="meta-value text-accent">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Водій:</span>
+              <span id="wb-driver-name" class="meta-value text-white">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Тип палива:</span>
+              <span id="wb-fuel-type" class="meta-value text-yellow">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Базовий розхід палива:</span>
+              <span id="wb-fuel-base-rate" class="meta-value text-accent">- л/100 км</span>
+            </div>
+          </div>
+        </div>
+
+        <form id="form-waybill" class="waybill-form-body">
+          
+          <!-- INITIAL STATE SECTION -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <svg class="sec-icon"><use href="#icon-gauge"></use></svg>
+              Вихідний стан активу
+            </h3>
+            
+            <div class="form-row-grid-3">
+              <div class="form-group">
+                <label for="wb-start-odometer">Початковий одометр (км/мотогодини)</label>
+                <input type="number" id="wb-start-odometer" class="tactical-input" min="0" required readonly>
+                <small class="form-help">Зафіксовано на початку виїзду</small>
+              </div>
+              <div class="form-group">
+                <label for="wb-start-fuel">Залишок палива в баку (л)</label>
+                <input type="number" id="wb-start-fuel" class="tactical-input" min="0" step="0.1" required readonly>
+                <small class="form-help">Фактична наявність у баку</small>
+              </div>
+              <div class="form-group">
+                <label for="wb-start-talons">Початковий баланс у талонах (л)</label>
+                <input type="number" id="wb-start-talons" class="tactical-input" min="0" required readonly>
+                <small class="form-help">Обсяг за відомістю талонів</small>
+              </div>
+              <div class="form-group container-adblue">
+                <label for="wb-start-adblue">Початковий залишок AdBlue (л)</label>
+                <input type="number" id="wb-start-adblue" class="tactical-input" min="0" step="0.1" readonly>
+                <small class="form-help">Кількість AdBlue в баку</small>
+              </div>
+              <div class="form-group container-adblue">
+                <label for="wb-start-adblue-talons">Початковий AdBlue у талонах (л)</label>
+                <input type="number" id="wb-start-adblue-talons" class="tactical-input" min="0" readonly>
+                <small class="form-help">Обсяг AdBlue за талонами</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- FUEL REFILL STOPS (TALON / CASH / MOBIL) -->
+          <div class="form-section">
+            <div class="section-header-flex">
+              <h3 class="section-title">
+                <svg class="sec-icon"><use href="#icon-droplet"></use></svg>
+                Заправки паливом під час виїзду
+              </h3>
+              <button type="button" id="btn-add-refill" class="btn btn-xs btn-outline">
+                <svg class="btn-svg-small"><use href="#icon-plus"></use></svg>
+                Додати заправку
+              </button>
+            </div>
+
+            <div id="refill-logs-container" class="fluid-log-list">
+              <!-- Dynamically Appended Fuel Refills -->
+            </div>
+          </div>
+
+          <!-- CONSUMABLES & FLUID LOGS -->
+          <div class="form-section">
+            <div class="section-header-flex">
+              <h3 class="section-title">
+                <svg class="sec-icon"><use href="#icon-zap"></use></svg>
+                Використання мастил та додаткових рідин
+              </h3>
+              <button type="button" id="btn-add-custom-fluid" class="btn btn-xs btn-outline">
+                <svg class="btn-svg-small"><use href="#icon-plus"></use></svg>
+                + Додати рідину / мастило
+              </button>
+            </div>
+
+            <!-- Custom/Allowed Fluids Container -->
+            <div id="custom-fluids-container" class="fluid-log-list">
+              <!-- Dynamically Appended Fluids -->
+            </div>
+          </div>
+
+          <!-- ROUTE AND DISTANCE BREAKDOWN SECTION -->
+          <div class="form-section">
+            <div class="section-header-flex">
+              <h3 class="section-title">
+                <svg class="sec-icon"><use href="#icon-file-text"></use></svg>
+                Маршрут руху та розбивка кілометражу
+              </h3>
+              <button type="button" id="btn-add-route" class="btn btn-xs btn-outline">
+                <svg class="btn-svg-small"><use href="#icon-plus"></use></svg>
+                Додати сегмент маршруту
+              </button>
+            </div>
+
+            <div id="route-segments-container" class="route-segments-stack">
+              <!-- Route Segments appended here -->
+            </div>
+          </div>
+
+          <!-- LIVE REACTIVE CALCULATIONS CONTAINER -->
+          <div class="tactical-calculator-box">
+            <h4 class="calc-box-title">Розрахунок балансу витрат палива</h4>
+            <div class="calc-results-grid">
+              <div class="calc-item">
+                <span class="calc-label">Загальна відстань:</span>
+                <span id="calc-total-distance" class="calc-value text-white">0 км</span>
+              </div>
+              <div class="calc-item">
+                <span class="calc-label">Додано заправками:</span>
+                <span id="calc-total-refills" class="calc-value text-accent">0 л</span>
+              </div>
+              <div class="calc-item">
+                <span class="calc-label">Розрахункова витрата палива:</span>
+                <span id="calc-total-consumption" class="calc-value text-yellow">0.0 л</span>
+              </div>
+              <div class="calc-item highlight-box">
+                <span class="calc-label">Залишок у баку (Розрахунковий):</span>
+                <span id="calc-remaining-fuel" class="calc-value text-green">0.0 л</span>
+              </div>
+            </div>
+
+            <!-- Dynamic AdBlue Calc Results (only shown for diesel) -->
+            <div class="calc-results-grid container-adblue hidden" style="margin-top: 1rem; border-top: 1px dashed rgba(85, 107, 47, 0.3); padding-top: 1rem;">
+              <div class="calc-item">
+                <span class="calc-label">Витрата AdBlue (Розрахункова):</span>
+                <span id="calc-adblue-consumption" class="calc-value text-yellow">0.0 л</span>
+              </div>
+              <div class="calc-item highlight-box">
+                <span class="calc-label">Залишок AdBlue в баку (Розрахунковий):</span>
+                <span id="calc-adblue-remaining" class="calc-value text-green">0.0 л</span>
+              </div>
+            </div>
+
+            <!-- Detailed Fuel Breakdown List -->
+            <div id="calc-detailed-breakdown"></div>
+            
+            <div class="alert-banner hidden" id="calc-discrepancy-alert">
+              <svg class="alert-icon"><use href="#icon-shield-alert"></use></svg>
+              <span>Попередження: Розрахункова витрата перевищує фактичний об'єм палива в баку! Перевірте правильність кілометражу або заправок.</span>
+            </div>
+          </div>
+
+          <!-- FOOTER ACTIONS -->
+          <div class="waybill-footer-actions">
+            <button type="button" id="btn-save-waybill" class="btn btn-secondary btn-large">
+              <svg class="btn-svg"><use href="#icon-save"></use></svg>
+              Зберегти для продовження
+            </button>
+            
+            <button type="button" id="btn-close-waybill-trigger" class="btn btn-accent btn-large">
+              <svg class="btn-svg"><use href="#icon-lock"></use></svg>
+              Закрити дорожній лист
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+
+    <!-- VIEW 4: VOUCHER (TALON) VERIFICATION VIEW -->
+    <section id="view-vouchers" class="app-screen">
+      <div class="form-navigation">
+        <button id="btn-back-dashboard-from-vouchers" class="btn btn-outline btn-back">
+          ← До панелі активів
+        </button>
+        <span class="badge badge-neutral">РЕЄСТР ТАЛОНІВ</span>
+      </div>
+
+      <div class="card tactical-card">
+        <div class="card-header">
+          <h2>Фізична верифікація талонів на паливо</h2>
+          <p class="subtitle text-amber">Підтвердьте фактичну наявність виданих паливних талонів</p>
+        </div>
+        
+        <div class="card-body">
+          <div id="vouchers-list-container" class="vouchers-stack">
+            <!-- Dynamically populated from JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CONFIRMATION POPUP MODAL (For Closing Waybill) -->
+  <div id="modal-confirm-close" class="modal-overlay hidden">
+    <div class="modal-content tactical-card">
+      <div class="modal-header">
+        <svg class="modal-alert-icon text-amber"><use href="#icon-shield-alert"></use></svg>
+        <h3>Офіційне закриття дорожнього листа</h3>
+      </div>
+      <div class="modal-body">
+        <p class="text-white">Увага! Закриття документа призведе до його повного блокування.</p>
+        <p class="text-muted text-sm">Дані будуть передані на сервер бази даних, а локальний кеш очищено. Ви більше не зможете редагувати цей документ.</p>
+        
+        <div id="modal-summary-box" class="summary-box">
+          <!-- Populated by JS with totals -->
+        </div>
+
+        <div class="download-container">
+          <p class="download-text">Бажаєте зберегти звіт у текстовому форматі (.txt)?</p>
+          <button id="btn-download-txt" class="btn btn-outline btn-block">
+            <svg class="btn-svg-small"><use href="#icon-file-text"></use></svg>
+            Завантажити звіт DL_Summary.txt (Опціонально)
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-modal-cancel" class="btn btn-outline">Скасувати</button>
+        <button id="btn-modal-confirm" class="btn btn-accent">Підтвердити закриття</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
