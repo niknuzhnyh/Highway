@@ -191,17 +191,72 @@
     <section id="view-dashboard" class="app-screen">
       <div class="dashboard-header">
         <div class="dashboard-title">
-          <h2>Управління закріпленими активами</h2>
-          <p class="subtitle">Оберіть транспортний засіб або генератор для обліку</p>
+          <h2>Тактична панель приладів</h2>
+          <p class="subtitle">Статистика чергування та управління закріпленими активами</p>
         </div>
-        <button id="btn-go-vouchers" class="btn btn-outline btn-vouchers-nav">
-          <svg class="btn-svg"><use href="#icon-tag"></use></svg>
-          <span>Реєстр талонів</span>
-        </button>
       </div>
 
+      <!-- Bento Grid Statistics Section -->
+      <div class="bento-grid">
+        <!-- Hero Stats Block -->
+        <div class="bento-card bento-hero">
+          <div class="bento-card-title">
+            <svg><use href="#icon-file-text"></use></svg>
+            <span>Показники чергування</span>
+          </div>
+          <div class="bento-stats-container">
+            <div class="bento-stat-item">
+              <div class="bento-stat-label">Всього пройдено</div>
+              <div id="bento-stat-distance" class="bento-stat-value white">0.0 км</div>
+            </div>
+            <div class="bento-stat-item">
+              <div class="bento-stat-label">Витрата палива</div>
+              <div id="bento-stat-consumed" class="bento-stat-value yellow">0.0 л</div>
+            </div>
+            <div class="bento-stat-item">
+              <div class="bento-stat-label">Активні листи</div>
+              <div id="bento-stat-active-count" class="bento-stat-value">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vouchers Bento Block -->
+        <div class="bento-card">
+          <div class="bento-card-title">
+            <svg><use href="#icon-tag"></use></svg>
+            <span>Верифікація талонів</span>
+          </div>
+          <div class="bento-card-body">
+            <p>У реєстрі талонів: <strong class="text-white" id="bento-vouchers-total">0</strong> шт.</p>
+            <p>Не підтверджено: <strong class="text-amber" id="bento-vouchers-pending">0</strong> шт.</p>
+          </div>
+          <div class="bento-card-actions">
+            <button id="btn-go-vouchers" class="btn btn-outline btn-xs btn-block">
+              Відкрити реєстр
+            </button>
+          </div>
+        </div>
+
+        <!-- Archive Bento Block -->
+        <div class="bento-card">
+          <div class="bento-card-title">
+            <svg><use href="#icon-lock"></use></svg>
+            <span>Архів документів</span>
+          </div>
+          <div class="bento-card-body">
+            <p>Закрито дорожніх листів: <strong class="text-green" id="bento-archive-closed">0</strong></p>
+            <p>Всі дані синхронізовані та заархівовані на сервері.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-title" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
+        <svg class="sec-icon"><use href="#icon-truck"></use></svg>
+        Закріплені активи техніки
+      </h3>
+
       <div class="assets-grid" id="assets-list-container">
-        <!-- Dynically populated from javascript state -->
+        <!-- Dynamically populated from javascript state -->
         <div class="card tactical-card asset-skeleton">
           <div class="skeleton-line"></div>
           <div class="skeleton-line short"></div>
@@ -363,7 +418,7 @@
             </div>
 
             <!-- Dynamic AdBlue Calc Results (only shown for diesel) -->
-            <div class="calc-results-grid container-adblue hidden" style="margin-top: 1rem; border-top: 1px dashed rgba(85, 107, 47, 0.3); padding-top: 1rem;">
+            <div class="calc-results-grid container-adblue hidden" style="margin-top: 1rem; border-top: 1px dashed rgba(255, 255, 255, 0.05); padding-top: 1rem;">
               <div class="calc-item">
                 <span class="calc-label">Витрата AdBlue (Розрахункова):</span>
                 <span id="calc-adblue-consumption" class="calc-value text-yellow">0.0 л</span>
@@ -371,6 +426,17 @@
               <div class="calc-item highlight-box">
                 <span class="calc-label">Залишок AdBlue в баку (Розрахунковий):</span>
                 <span id="calc-adblue-remaining" class="calc-value text-green">0.0 л</span>
+              </div>
+            </div>
+
+            <!-- Linear fuel utilization progress bar -->
+            <div class="tactical-progress-wrapper" id="calc-utilization-wrapper">
+              <div class="tactical-progress-label">
+                <span>Використання наявного палива</span>
+                <span id="calc-utilization-percentage">0%</span>
+              </div>
+              <div class="tactical-progress-bar-bg">
+                <div id="calc-utilization-bar" class="tactical-progress-bar-fill"></div>
               </div>
             </div>
 

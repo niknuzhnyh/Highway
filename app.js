@@ -330,12 +330,78 @@ function renderDashboard() {
   const container = document.getElementById("assets-list-container");
   container.innerHTML = ""; // Очищуємо контейнер
 
+  // Збір статистики для Bento Grid
+  let totalDistance = 0;
+  let totalConsumption = 0;
+  let activeCount = 0;
+  
+  MOCK_ASSETS.forEach(asset => {
+    const localActive = localStorage.getItem(`active_waybill_${asset.plate}`);
+    if (localActive) {
+      activeCount++;
+      const wb = JSON.parse(localActive);
+      const coef = AppState.getCoefficients();
+      const divisor = asset.type === "generator" ? 1 : 100;
+      wb.routes.forEach(route => {
+        const s = route.distSmallCity || 0;
+        const m = route.distMediumCity || 0;
+        const b = route.distBigCity || 0;
+        const h = route.distHighway || 0;
+        const d = route.distDirt || 0;
+        totalDistance += (s + m + b + h + d);
+        totalConsumption += (
+          (s * (wb.baseConsumption * coef.smallCity) / divisor) +
+          (m * (wb.baseConsumption * coef.mediumCity) / divisor) +
+          (b * (wb.baseConsumption * coef.bigCity) / divisor) +
+          (h * (wb.baseConsumption * coef.highway) / divisor) +
+          (d * (wb.baseConsumption * coef.dirt) / divisor)
+        );
+      });
+    }
+  });
+
+  const archive = JSON.parse(localStorage.getItem("waybill_archive")) || [];
+  archive.forEach(wb => {
+    const asset = MOCK_ASSETS.find(a => a.plate === wb.plate);
+    const divisor = (asset && asset.type === "generator") ? 1 : 100;
+    const coef = AppState.getCoefficients();
+    wb.routes.forEach(route => {
+      const s = route.distSmallCity || 0;
+      const m = route.distMediumCity || 0;
+      const b = route.distBigCity || 0;
+      const h = route.distHighway || 0;
+      const d = route.distDirt || 0;
+      totalDistance += (s + m + b + h + d);
+      totalConsumption += (
+        (s * (wb.baseConsumption * coef.smallCity) / divisor) +
+        (m * (wb.baseConsumption * coef.mediumCity) / divisor) +
+        (b * (wb.baseConsumption * coef.bigCity) / divisor) +
+        (h * (wb.baseConsumption * coef.highway) / divisor) +
+        (d * (wb.baseConsumption * coef.dirt) / divisor)
+      );
+    });
+  });
+
+  // Оновлюємо Bento-карту показників чергування
+  document.getElementById("bento-stat-distance").textContent = `${totalDistance.toFixed(1)} км/год`;
+  document.getElementById("bento-stat-consumed").textContent = `${totalConsumption.toFixed(1)} л`;
+  document.getElementById("bento-stat-active-count").textContent = activeCount;
+
+  // Оновлюємо Bento-карту талонів
+  const totalVouchers = state.vouchers.length;
+  const pendingVouchers = state.vouchers.filter(v => v.status === "pending").length;
+  document.getElementById("bento-vouchers-total").textContent = totalVouchers;
+  document.getElementById("bento-vouchers-pending").textContent = pendingVouchers;
+
+  // Оновлюємо Bento-карту архіву
+  document.getElementById("bento-archive-closed").textContent = archive.length;
+
+  // Рендеримо картки активів техніки (однакового розміру відповідно до CSS grid)
   MOCK_ASSETS.forEach(asset => {
     const card = document.createElement("div");
     card.className = "card tactical-card asset-card";
     card.id = `asset-card-${asset.plate}`;
 
-    // Перевірка наявності активного листа у локальному сховищі
     const localActive = localStorage.getItem(`active_waybill_${asset.plate}`);
     if (localActive) {
       card.classList.add("active-waybill-present");
@@ -1256,6 +1322,28 @@ function runReactiveCalculations() {
   } else {
     remainingEl.className = "calc-value text-green";
     alertEl.classList.add("hidden");
+  }
+
+  // Розрахунок відсотка використання палива для тактичного лінійного прогрес-бару
+  const availableFuel = wb.startFuel + totalRefills;
+  let spentPercentage = 0;
+  if (availableFuel > 0) {
+    spentPercentage = (totalConsumption / availableFuel) * 100;
+  }
+  spentPercentage = Math.min(Math.max(spentPercentage, 0), 100);
+
+  const percentLabel = document.getElementById("calc-utilization-percentage");
+  const fillBar = document.getElementById("calc-utilization-bar");
+  if (percentLabel && fillBar) {
+    percentLabel.textContent = `${spentPercentage.toFixed(0)}%`;
+    fillBar.style.width = `${spentPercentage}%`;
+    if (remainingFuel < 0) {
+      fillBar.className = "tactical-progress-bar-fill warning-fill";
+      percentLabel.className = "text-red";
+    } else {
+      fillBar.className = "tactical-progress-bar-fill";
+      percentLabel.className = "text-green";
+    }
   }
 
   // Розрахунок AdBlue для дизельної техніки
