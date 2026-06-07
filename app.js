@@ -330,62 +330,7 @@ function renderDashboard() {
   const container = document.getElementById("assets-list-container");
   container.innerHTML = ""; // Очищуємо контейнер
 
-  // Збір статистики для Bento Grid
-  let totalDistance = 0;
-  let totalConsumption = 0;
-  let activeCount = 0;
-  
-  MOCK_ASSETS.forEach(asset => {
-    const localActive = localStorage.getItem(`active_waybill_${asset.plate}`);
-    if (localActive) {
-      activeCount++;
-      const wb = JSON.parse(localActive);
-      const coef = AppState.getCoefficients();
-      const divisor = asset.type === "generator" ? 1 : 100;
-      wb.routes.forEach(route => {
-        const s = route.distSmallCity || 0;
-        const m = route.distMediumCity || 0;
-        const b = route.distBigCity || 0;
-        const h = route.distHighway || 0;
-        const d = route.distDirt || 0;
-        totalDistance += (s + m + b + h + d);
-        totalConsumption += (
-          (s * (wb.baseConsumption * coef.smallCity) / divisor) +
-          (m * (wb.baseConsumption * coef.mediumCity) / divisor) +
-          (b * (wb.baseConsumption * coef.bigCity) / divisor) +
-          (h * (wb.baseConsumption * coef.highway) / divisor) +
-          (d * (wb.baseConsumption * coef.dirt) / divisor)
-        );
-      });
-    }
-  });
-
   const archive = JSON.parse(localStorage.getItem("waybill_archive")) || [];
-  archive.forEach(wb => {
-    const asset = MOCK_ASSETS.find(a => a.plate === wb.plate);
-    const divisor = (asset && asset.type === "generator") ? 1 : 100;
-    const coef = AppState.getCoefficients();
-    wb.routes.forEach(route => {
-      const s = route.distSmallCity || 0;
-      const m = route.distMediumCity || 0;
-      const b = route.distBigCity || 0;
-      const h = route.distHighway || 0;
-      const d = route.distDirt || 0;
-      totalDistance += (s + m + b + h + d);
-      totalConsumption += (
-        (s * (wb.baseConsumption * coef.smallCity) / divisor) +
-        (m * (wb.baseConsumption * coef.mediumCity) / divisor) +
-        (b * (wb.baseConsumption * coef.bigCity) / divisor) +
-        (h * (wb.baseConsumption * coef.highway) / divisor) +
-        (d * (wb.baseConsumption * coef.dirt) / divisor)
-      );
-    });
-  });
-
-  // Оновлюємо Bento-карту показників чергування
-  document.getElementById("bento-stat-distance").textContent = `${totalDistance.toFixed(1)} км/год`;
-  document.getElementById("bento-stat-consumed").textContent = `${totalConsumption.toFixed(1)} л`;
-  document.getElementById("bento-stat-active-count").textContent = activeCount;
 
   // Оновлюємо Bento-карту талонів
   const totalVouchers = state.vouchers.length;
