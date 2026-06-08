@@ -338,8 +338,6 @@ function renderDashboard() {
   document.getElementById("bento-vouchers-total").textContent = totalVouchers;
   document.getElementById("bento-vouchers-pending").textContent = pendingVouchers;
 
-  // Оновлюємо Bento-карту архіву
-  document.getElementById("bento-archive-closed").textContent = archive.length;
 
   // Рендеримо картки активів техніки (однакового розміру відповідно до CSS grid)
   MOCK_ASSETS.forEach(asset => {
