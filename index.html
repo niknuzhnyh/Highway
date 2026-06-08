@@ -486,6 +486,29 @@
     </div>
   </div>
 
+  <!-- REPORT MISSING VOUCHER MODAL -->
+  <div id="modal-report-missing" class="modal-overlay hidden">
+    <div class="modal-content tactical-card" style="border-left-color: var(--accent-red);">
+      <div class="modal-header">
+        <svg class="modal-alert-icon text-red" style="width: 28px; height: 28px; color: var(--accent-red);"><use href="#icon-shield-alert"></use></svg>
+        <h3>Повідомити про відсутність талона</h3>
+      </div>
+      <div class="modal-body">
+        <p class="text-white" style="margin-bottom: 0.75rem;">Ви підтверджуєте відсутність талона <strong id="modal-missing-voucher-id" class="text-yellow">-</strong>?</p>
+        <p class="text-muted text-sm" style="margin-bottom: 1rem;">Інформація про невідповідність буде надіслана командуванню та техніку підрозділу.</p>
+        
+        <div class="form-group">
+          <label for="input-missing-reason">Причина скарги / Коментар (Опціонально)</label>
+          <input type="text" id="input-missing-reason" class="tactical-input" placeholder="напр., талон втрачено, пошкоджено штрих-код тощо">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-modal-missing-cancel" class="btn btn-outline">Скасувати</button>
+        <button id="btn-modal-missing-confirm" class="btn btn-danger">Підтвердити відсутність</button>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

@@ -113,6 +113,9 @@ class AppState {
     // Списки дозволених рідин та їхніх норм споживання, що підвантажуються з сервера
     this.allowedFluids = JSON.parse(localStorage.getItem("allowed_fluids_global")) || [];
     this.fluidNorms = JSON.parse(localStorage.getItem("fluid_norms_global")) || {};
+    
+    // Тимчасовий стан для верифікації талонів
+    this.currentMissingVoucher = null;
   }
 
   setCurrentUser(user) {
@@ -270,6 +273,13 @@ function setupEventListeners() {
   });
   document.getElementById("btn-modal-confirm").addEventListener("click", handleConfirmCloseWaybill);
   document.getElementById("btn-download-txt").addEventListener("click", downloadWaybillTxt);
+
+  // ПОПАП ВІДСУТНОСТІ ТАЛОНА
+  document.getElementById("btn-modal-missing-cancel").addEventListener("click", () => {
+    document.getElementById("modal-report-missing").classList.add("hidden");
+    state.currentMissingVoucher = null;
+  });
+  document.getElementById("btn-modal-missing-confirm").addEventListener("click", handleConfirmMissingVoucher);
 }
 
 // ==========================================================================
@@ -1663,22 +1673,39 @@ function renderVouchersList() {
     });
 
     card.querySelector(".btn-report-missing").addEventListener("click", () => {
-      v.status = "missing";
-      state.saveVouchers();
-      renderVouchersList();
-      triggerMissingTalonAlert(v);
+      state.currentMissingVoucher = v;
+      document.getElementById("modal-missing-voucher-id").textContent = v.id;
+      document.getElementById("input-missing-reason").value = "";
+      document.getElementById("modal-report-missing").classList.remove("hidden");
     });
 
     container.appendChild(card);
   });
 }
 
+// Обробник підтвердження відсутності талона в модальному вікні
+function handleConfirmMissingVoucher() {
+  const v = state.currentMissingVoucher;
+  if (!v) return;
+
+  const reason = document.getElementById("input-missing-reason").value.trim();
+  v.status = "missing";
+  state.saveVouchers();
+  renderVouchersList();
+  triggerMissingTalonAlert(v, reason);
+
+  document.getElementById("modal-report-missing").classList.add("hidden");
+  state.currentMissingVoucher = null;
+}
+
 // Подвійне сповіщення про розбіжність
-function triggerMissingTalonAlert(voucher) {
+function triggerMissingTalonAlert(voucher, reason = "") {
+  const reasonText = reason ? ` (причина: ${reason})` : "";
+  
   // 1. Екранне попередження (Toast + In-App Push Popup)
   showToast(
     "КРИТИЧНА ПОМИЛКА",
-    `Зафіксовано відсутність талона №${voucher.id}! Інформацію надіслано техніку підрозділу.`,
+    `Зафіксовано відсутність талона №${voucher.id}!${reasonText} Інформацію надіслано техніку підрозділу.`,
     "error"
   );
 
@@ -1688,5 +1715,5 @@ function triggerMissingTalonAlert(voucher) {
   console.log(`КАНАЛ 2 (EMAIL): Надіслано офіційні листи на адреси:
     - Водій: ${state.currentUser.email}
     - Технік частини: tech.support@military.gov.ua
-    Вміст: Повідомляємо про невідповідність/втрату талона № ${voucher.id} (${voucher.volume} л, ${voucher.fuelType}) водієм ${state.currentUser.fullName}.`);
+    Вміст: Повідомляємо про невідповідність/втрату талона № ${voucher.id} (${voucher.volume} л, ${voucher.fuelType}) водієм ${state.currentUser.fullName}.${reason ? ` Вказана причина: ${reason}.` : ""}`);
 }
