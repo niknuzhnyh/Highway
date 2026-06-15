@@ -878,22 +878,27 @@ input[readonly] {
   flex: 1 1 140px;
 }
 
-.log-row > button.btn-delete-row {
-  flex: 0 0 48px;
-  height: 48px;
-  padding: 0;
-  display: inline-flex;
+.refill-actions-group {
+  display: flex;
+  gap: 0.5rem;
   align-items: center;
-  justify-content: center;
+  flex: 1 1 140px;
 }
 
-.log-row > button.btn-ok-refill {
-  min-height: 48px;
-  padding: 0 1rem;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.refill-actions-group .refill-amount-group {
+  flex: 1 !important;
+}
+
+.log-row button.btn-delete-row,
+.log-row button.btn-ok-refill {
+  flex: 0 0 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+  padding: 0 !important;
+  min-height: 48px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 @keyframes slideIn {
@@ -1492,14 +1497,9 @@ body.modal-open {
     flex: 1 0 100% !important;
     width: 100% !important;
   }
-  .refill-row .refill-amount-group {
-    flex: 1 1 0% !important;
-  }
-  .refill-row .btn-ok-refill {
-    flex: 0 0 auto !important;
-  }
-  .refill-row .btn-delete-row {
-    flex: 0 0 48px !important;
+  .refill-row .refill-actions-group {
+    flex: 1 0 100% !important;
+    width: 100% !important;
   }
 }
 

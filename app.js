@@ -742,13 +742,15 @@ function appendRefillRowToDOM(refill) {
     <div class="form-group detail-container refill-detail-group" style="margin: 0;">
       <!-- Динамічний інпут чи селект (прихований для Налив) -->
     </div>
-    <div class="form-group refill-amount-group" style="margin: 0;">
-      <input type="number" class="refill-amount-input" value="${Math.round(refill.amount) || 0}" min="0" step="1" placeholder="Літри">
+    <div class="refill-actions-group">
+      <div class="form-group refill-amount-group" style="margin: 0;">
+        <input type="number" class="refill-amount-input" value="${Math.round(refill.amount) || 0}" min="0" step="1" placeholder="Літри">
+      </div>
+      <button type="button" class="btn btn-outline btn-xs btn-ok-refill">ОК</button>
+      <button type="button" class="btn btn-danger btn-xs btn-delete-row">
+        <svg class="btn-svg-small"><use href="#icon-trash"></use></svg>
+      </button>
     </div>
-    <button type="button" class="btn btn-outline btn-xs btn-ok-refill">ОК</button>
-    <button type="button" class="btn btn-danger btn-xs btn-delete-row">
-      <svg class="btn-svg-small"><use href="#icon-trash"></use></svg>
-    </button>
   `;
 
   const detailContainer = row.querySelector(".detail-container");
@@ -765,7 +767,7 @@ function appendRefillRowToDOM(refill) {
       methodSelect.setAttribute("disabled", true);
       dateInput.setAttribute("disabled", true);
       if (talonSelect) talonSelect.setAttribute("disabled", true);
-      okBtn.textContent = "Редагувати";
+      okBtn.innerHTML = `<svg class="btn-svg-small"><use href="#icon-lock"></use></svg>`;
       okBtn.className = "btn btn-secondary btn-xs btn-ok-refill";
     } else {
       if (refill.method === "base") {
