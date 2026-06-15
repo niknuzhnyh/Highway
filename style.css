@@ -1180,10 +1180,13 @@ input[readonly] {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.85);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 1rem;
+  padding: 2rem 1rem;
   z-index: 200;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  backdrop-filter: blur(4px);
   animation: fadeIn var(--transition-speed);
 }
 
@@ -1192,9 +1195,14 @@ input[readonly] {
 }
 
 .modal-content {
+  margin: auto;
   max-width: 500px;
   width: 100%;
   border-left-color: var(--accent-yellow);
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 .modal-header {

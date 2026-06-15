@@ -270,6 +270,7 @@ function setupEventListeners() {
   // ПОПАП ПІДТВЕРДЖЕННЯ ЗАКРИТТЯ
   document.getElementById("btn-modal-cancel").addEventListener("click", () => {
     document.getElementById("modal-confirm-close").classList.add("hidden");
+    document.body.classList.remove("modal-open");
   });
   document.getElementById("btn-modal-confirm").addEventListener("click", handleConfirmCloseWaybill);
   document.getElementById("btn-download-txt").addEventListener("click", downloadWaybillTxt);
@@ -278,6 +279,7 @@ function setupEventListeners() {
   document.getElementById("btn-modal-missing-cancel").addEventListener("click", () => {
     document.getElementById("modal-report-missing").classList.add("hidden");
     state.currentMissingVoucher = null;
+    document.body.classList.remove("modal-open");
   });
   document.getElementById("btn-modal-missing-confirm").addEventListener("click", handleConfirmMissingVoucher);
 }
@@ -1479,6 +1481,7 @@ function handleCloseWaybillTrigger() {
   summaryBox.innerHTML = summaryHtml;
 
   document.getElementById("modal-confirm-close").classList.remove("hidden");
+  document.body.classList.add("modal-open");
 }
 
 // Остаточне підтвердження закриття листа
@@ -1505,6 +1508,7 @@ function handleConfirmCloseWaybill() {
     localStorage.setItem("waybill_archive", JSON.stringify(archive));
 
     document.getElementById("modal-confirm-close").classList.add("hidden");
+    document.body.classList.remove("modal-open");
     showToast("Успішно", `Дорожній лист № ${wb.serialNumber} закрито та архівовано на сервері.`, "success");
     
     renderDashboard();
@@ -1677,6 +1681,7 @@ function renderVouchersList() {
       document.getElementById("modal-missing-voucher-id").textContent = v.id;
       document.getElementById("input-missing-reason").value = "";
       document.getElementById("modal-report-missing").classList.remove("hidden");
+      document.body.classList.add("modal-open");
     });
 
     container.appendChild(card);
@@ -1696,6 +1701,7 @@ function handleConfirmMissingVoucher() {
 
   document.getElementById("modal-report-missing").classList.add("hidden");
   state.currentMissingVoucher = null;
+  document.body.classList.remove("modal-open");
 }
 
 // Подвійне сповіщення про розбіжність
