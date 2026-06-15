@@ -699,7 +699,7 @@ function sanitizeFluidAmount(inputEl, fluid) {
 function appendRefillRowToDOM(refill) {
   const container = document.getElementById("refill-logs-container");
   const row = document.createElement("div");
-  row.className = "log-row";
+  row.className = "log-row refill-row";
   row.dataset.refillId = refill.id;
 
   if (refill.locked === undefined) {
@@ -730,19 +730,19 @@ function appendRefillRowToDOM(refill) {
   });
 
   row.innerHTML = `
-    <div class="form-group" style="margin: 0;">
+    <div class="form-group refill-date-group" style="margin: 0;">
       <input type="date" class="refill-date-input" value="${refill.date || ''}" required>
     </div>
-    <div class="form-group" style="margin: 0;">
+    <div class="form-group refill-method-group" style="margin: 0;">
       <select class="refill-method-select">
         <option value="base" ${refill.method === 'base' ? 'selected' : ''}>Налив на базі ВЧ</option>
         <option value="talon" ${refill.method === 'talon' ? 'selected' : ''}>Талон з реєстру</option>
       </select>
     </div>
-    <div class="form-group detail-container" style="margin: 0;">
+    <div class="form-group detail-container refill-detail-group" style="margin: 0;">
       <!-- Динамічний інпут чи селект (прихований для Налив) -->
     </div>
-    <div class="form-group" style="margin: 0;">
+    <div class="form-group refill-amount-group" style="margin: 0;">
       <input type="number" class="refill-amount-input" value="${Math.round(refill.amount) || 0}" min="0" step="1" placeholder="Літри">
     </div>
     <button type="button" class="btn btn-outline btn-xs btn-ok-refill">ОК</button>
@@ -906,7 +906,7 @@ function addCustomFluidRow() {
 function appendCustomFluidRowToDOM(fluid) {
   const container = document.getElementById("custom-fluids-container");
   const row = document.createElement("div");
-  row.className = "log-row";
+  row.className = "log-row fluid-row";
 
   // Використовуємо список дозволених рідин, підвантажений з сервера
   const allOptions = state.allowedFluids.length > 0 ? state.allowedFluids : (state.activeAsset ? [...state.activeAsset.allowedFluids, "Склоомивач", "Двотактне мастило"] : []);
@@ -923,13 +923,13 @@ function appendCustomFluidRowToDOM(fluid) {
   selectOptions += `<option value="custom" ${isCustomSelected}>Ввести вручну...</option>`;
 
   row.innerHTML = `
-    <div class="form-group" style="margin: 0; display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+    <div class="form-group fluid-name-group" style="margin: 0; display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
       <select class="fluid-select-name">
         ${selectOptions}
       </select>
       <input type="text" class="fluid-name-input ${isCustom ? '' : 'hidden'}" value="${fluid.name}" placeholder="Назва рідини" style="min-height: 38px; padding: 0.5rem;">
     </div>
-    <div class="form-group" style="margin: 0; display: flex; flex-direction: column; gap: 0.25rem;">
+    <div class="form-group fluid-amount-group" style="margin: 0; display: flex; flex-direction: column; gap: 0.25rem;">
       <input type="number" class="fluid-amount-input" value="${fluid.amount || ''}" min="0" step="0.001" placeholder="К-сть (л/кг)">
       <span class="norm-feedback text-sm text-muted" style="font-family: var(--font-mono); display: block; white-space: nowrap; margin-top: 0.25rem;">Норма: 0.00 л</span>
     </div>
