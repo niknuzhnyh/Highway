@@ -452,6 +452,12 @@ input[readonly] {
   .form-row-grid-3 {
     grid-template-columns: repeat(3, 1fr);
   }
+  .form-row-grid-3 label {
+    min-height: 3.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
 }
 
 /* Button UI Components (Touch Targets min-height: 48px) */

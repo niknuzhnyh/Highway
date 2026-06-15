@@ -1,4 +1,4 @@
-const CACHE_NAME = "military-waybill-v26";
+const CACHE_NAME = "military-waybill-v27";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
