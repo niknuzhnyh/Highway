@@ -306,56 +306,59 @@
 
           <!-- FUEL REFILL STOPS (TALON / CASH / MOBIL) -->
           <div class="form-section">
-            <div class="section-header-flex">
-              <h3 class="section-title">
-                <svg class="sec-icon"><use href="#icon-droplet"></use></svg>
-                Заправки паливом під час виїзду
-              </h3>
+            <h3 class="section-title" style="margin-bottom: 1rem;">
+              <svg class="sec-icon"><use href="#icon-droplet"></use></svg>
+              Заправки паливом під час виїзду
+            </h3>
+
+            <div id="refill-logs-container" class="fluid-log-list">
+              <!-- Dynamically Appended Fuel Refills -->
+            </div>
+
+            <div class="section-footer-actions">
               <button type="button" id="btn-add-refill" class="btn btn-xs btn-outline">
                 <svg class="btn-svg-small"><use href="#icon-plus"></use></svg>
                 Додати заправку
               </button>
             </div>
-
-            <div id="refill-logs-container" class="fluid-log-list">
-              <!-- Dynamically Appended Fuel Refills -->
-            </div>
           </div>
 
           <!-- CONSUMABLES & FLUID LOGS -->
           <div class="form-section">
-            <div class="section-header-flex">
-              <h3 class="section-title">
-                <svg class="sec-icon"><use href="#icon-zap"></use></svg>
-                Використання мастил та додаткових рідин
-              </h3>
-              <button type="button" id="btn-add-custom-fluid" class="btn btn-xs btn-outline">
-                <svg class="btn-svg-small"><use href="#icon-plus"></use></svg>
-                + Додати рідину / мастило
-              </button>
-            </div>
+            <h3 class="section-title" style="margin-bottom: 1rem;">
+              <svg class="sec-icon"><use href="#icon-zap"></use></svg>
+              Використання мастил та додаткових рідин
+            </h3>
 
             <!-- Custom/Allowed Fluids Container -->
             <div id="custom-fluids-container" class="fluid-log-list">
               <!-- Dynamically Appended Fluids -->
             </div>
+
+            <div class="section-footer-actions">
+              <button type="button" id="btn-add-custom-fluid" class="btn btn-xs btn-outline">
+                <svg class="btn-svg-small"><use href="#icon-plus"></use></svg>
+                + Додати рідину / мастило
+              </button>
+            </div>
           </div>
 
           <!-- ROUTE AND DISTANCE BREAKDOWN SECTION -->
           <div class="form-section">
-            <div class="section-header-flex">
-              <h3 class="section-title">
-                <svg class="sec-icon"><use href="#icon-file-text"></use></svg>
-                Маршрут руху та розбивка кілометражу
-              </h3>
+            <h3 class="section-title" style="margin-bottom: 1rem;">
+              <svg class="sec-icon"><use href="#icon-file-text"></use></svg>
+              Маршрут руху та розбивка кілометражу
+            </h3>
+
+            <div id="route-segments-container" class="route-segments-stack">
+              <!-- Route Segments appended here -->
+            </div>
+
+            <div class="section-footer-actions">
               <button type="button" id="btn-add-route" class="btn btn-xs btn-outline">
                 <svg class="btn-svg-small"><use href="#icon-plus"></use></svg>
                 Додати сегмент маршруту
               </button>
-            </div>
-
-            <div id="route-segments-container" class="route-segments-stack">
-              <!-- Route Segments appended here -->
             </div>
           </div>
 

@@ -855,6 +855,12 @@ input[readonly] {
   margin-bottom: 1rem;
 }
 
+.section-footer-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
 /* Fluid Row Items (Refills & Fluids) */
 .fluid-log-list {
   display: flex;
