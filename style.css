@@ -1427,8 +1427,12 @@ body.modal-open {
   flex-shrink: 0;
 }
 
-/* Mobile Responsive Styling Tweaks for Screens <= 680px */
-@media (max-width: 680px) {
+/* Mobile Responsive Styling Tweaks for Screens <= 768px */
+@media (max-width: 768px) {
+  .btn-ok-time {
+    display: none !important;
+  }
+
   .form-navigation {
     flex-direction: column;
     gap: 0.5rem;
