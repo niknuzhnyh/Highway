@@ -332,9 +332,12 @@ function handleRegisterRequest(e) {
 }
 
 function handleLogout() {
-  state.setCurrentUser(null);
-  showToast("Вихід", "Ви вийшли з системи", "info");
-  navigateTo("view-login");
+  localStorage.clear();
+  showToast("Вихід", "Ви вийшли з системи та очистили локальні дані", "info");
+  
+  setTimeout(() => {
+    window.location.reload();
+  }, 800);
 }
 
 // 2. ДАШБОРД (СПИСОК АКТИВІВ)
