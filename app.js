@@ -1093,23 +1093,23 @@ function appendRouteSegmentRowToDOM(segment, index) {
     <div class="route-distances-grid">
       <div class="dist-input-group">
         <label>${labelDist1}</label>
-        <input type="number" class="dist-small-input" value="${segment.distSmallCity}" min="0">
+        <input type="number" class="dist-small-input" value="${segment.distSmallCity}" min="0" step="1">
       </div>
       <div class="dist-input-group">
         <label>${labelDist2}</label>
-        <input type="number" class="dist-medium-input" value="${segment.distMediumCity}" min="0">
+        <input type="number" class="dist-medium-input" value="${segment.distMediumCity}" min="0" step="1">
       </div>
       <div class="dist-input-group">
         <label>${labelDist3}</label>
-        <input type="number" class="dist-big-input" value="${segment.distBigCity}" min="0">
+        <input type="number" class="dist-big-input" value="${segment.distBigCity}" min="0" step="1">
       </div>
       <div class="dist-input-group">
         <label>${labelDist4}</label>
-        <input type="number" class="dist-highway-input" value="${segment.distHighway}" min="0">
+        <input type="number" class="dist-highway-input" value="${segment.distHighway}" min="0" step="1">
       </div>
       <div class="dist-input-group">
         <label>${labelDist5}</label>
-        <input type="number" class="dist-dirt-input" value="${segment.distDirt}" min="0">
+        <input type="number" class="dist-dirt-input" value="${segment.distDirt}" min="0" step="1">
       </div>
     </div>
   `;
@@ -1162,19 +1162,31 @@ function appendRouteSegmentRowToDOM(segment, index) {
       }
     });
 
-    // Повертаємо 0, якщо поле порожнє при розфокусуванні
-    inputEl.addEventListener("blur", (e) => {
-      if (e.target.value === "") {
-        e.target.value = "0";
-        segment[di.key] = 0;
-        runReactiveCalculations();
+    // Запобігаємо введенню спецсимволів та дробових розділювачів на рівні клавіатури
+    inputEl.addEventListener("keydown", (e) => {
+      if (["e", "E", ",", ".", "-", "+"].includes(e.key)) {
+        e.preventDefault();
       }
     });
 
-    inputEl.addEventListener("input", (e) => {
-      let val = parseFloat(e.target.value);
+    // Санітація значення при втраті фокусу
+    inputEl.addEventListener("blur", (e) => {
+      let val = parseInt(e.target.value, 10);
       if (isNaN(val) || val < 0) {
         val = 0;
+      }
+      e.target.value = val.toString();
+      segment[di.key] = val;
+      runReactiveCalculations();
+    });
+
+    inputEl.addEventListener("input", (e) => {
+      let val = parseInt(e.target.value, 10);
+      if (isNaN(val) || val < 0) {
+        val = 0;
+      }
+      if (e.target.value !== "" && e.target.value !== val.toString()) {
+        e.target.value = val;
       }
       segment[di.key] = val;
       runReactiveCalculations();
